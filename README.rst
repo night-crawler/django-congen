@@ -13,6 +13,11 @@ Add `django-congen` to `INSTALLED_APPS`.
 
 .. code:: bash
 
-    ./manage.py congen -b nginx
-    ./manage.py congen -b /path/to/template.conf
+    # print collected settings
+    ./manage.py congen -p
 
+    # render nginx template with collected settings
+    ./manage.py congen -b nginx
+
+    # render django template with collected settings
+    ./manage.py congen -b /path/to/template.conf
