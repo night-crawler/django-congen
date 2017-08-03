@@ -1,0 +1,23 @@
+[program:{{ path.site_name }}-gunicorn]
+process_name=%(program_name)s
+directory={{ path.django_base_dir }}
+command={{ path.gunicorn_executable }} -c {{ path.django_base_dir }}/gunicorn_release.py {{ path.gunicorn_wsgi_application }}
+
+environment = LANG="ru_RU.UTF-8",LC_ALL="ru_RU.UTF-8",LC_LANG="ru_RU.UTF-8"
+
+user = '{{ path.project_name }}'
+group = '{{ path.project_name }}'
+numprocs=1
+
+autostart=true
+autorestart=true
+redirect_stderr=false
+
+stdout_logfile={{ path.var_log_dir }}/gunicorn-stdout.log
+stdout_logfile_maxbytes=1MB
+stdout_logfile_backups=10
+stdout_capture_maxbytes=1MB
+stderr_logfile={{ path.var_log_dir }}/gunicorn-stderr.log
+stderr_logfile_maxbytes=1MB
+stderr_logfile_backups=10
+stderr_capture_maxbytes=1MB

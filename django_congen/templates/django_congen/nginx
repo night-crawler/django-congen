@@ -1,0 +1,67 @@
+upstream {{ path.project_name }} {
+    server 127.0.0.1:{{ path.site_port }};
+}
+
+server {
+    listen   80;
+    server_name {{ path.site_name }};
+
+    client_max_body_size 4G;
+
+    access_log {{ path.var_log_dir }}/nginx-access.log;
+    error_log {{ path.var_log_dir }}/nginx-error.log;
+
+    location = /favicon.ico  {
+        rewrite "/favicon.ico" /static/frontend/custom/img/favicon.ico;
+        expires max;
+    }
+
+    location = /robots.txt {
+        rewrite "/robots.txt" /static/frontend/robots.txt;
+    }
+
+    location /static/ {
+        alias {{ path.django_base_dir }}/static/;
+        expires max;
+    }
+
+    location /media/ {
+        alias {{ path.django_base_dir }}/media/;
+        expires max;
+    }
+    #security!!!
+    #root {{ path.django_base_dir }};
+
+    location ~ /\. {
+        deny all;
+    }
+
+    if ( $http_user_agent ~* (nmap|nikto|wikto|sf|sqlmap|bsqlbf|w3af|acunetix|havij|appscan) ) {
+        return 444;
+    }
+
+    #location ~* \.(js|css|png|jpg|jpeg|gif|ico)(\?ver=[0-9.]+)?$ {
+    #    expires max;
+    #}
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Host $http_host;
+
+        proxy_redirect off;
+
+        # proxy_buffering off;
+
+        if (!-f $request_filename) {
+            proxy_pass http://{{ path.project_name }};
+            break;
+        }
+    }
+
+    # Error pages
+    #error_page 500 502 503 504 /500.html;
+    #location = /500.html {
+    # root /webapps/hello_django/static/;
+    #}
+}
