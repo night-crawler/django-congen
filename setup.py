@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
-from async_fetcher import __version__
+from django_congen import __version__
+
 
 with open('README.rst', 'r') as f:
     long_description = f.read()
+
 
 setup(
     name='django-congen',
